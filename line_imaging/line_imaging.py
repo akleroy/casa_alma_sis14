@@ -57,14 +57,17 @@ plotms(vis='sis14_twhya_selfcal.ms',
 # fitspw='0:240~280' and then set excludechans=True to tell CASA that
 # these are the channels NOT to fit). Fit only a constant amplitude
 # continuum by setting the fitorder to 0 and target only field '5',
-# the science source.
+# the science source. Note that we want to attempt this subtraction
+# for every individual u-v data point and so request a solution
+# interval equal to the integration time.
 
 os.system('rm -rf sis14_twhya_selfcal.ms.contsub')
 uvcontsub(vis = 'sis14_twhya_selfcal.ms',
           field = '5',
           fitspw = '0:240~280',
           excludechans = True,
-          fitorder = 0)
+          fitorder = 0,
+          solint='int')
 
 # The output is a continuum subtracted data set that has the
 # additional extension ".contsub". We can now plot that using PLOTMS,
@@ -152,3 +155,22 @@ imview("twhya_n2hp.image")
 # At this point you should feel free to play with the velocity axis
 # definitions, mess around with the viewer, and so on. Our next lesson
 # will go through how to make some basic analysis plots for the cube.
+
+# ------------------------
+# PRIMARY BEAM CORRECTION
+# ------------------------
+
+# As with continuum imaging, the line data cubes produced by CASA are
+# not primary beam corrected by default (you can change this via a
+# parameter in the call to CLEAN). For final calculations you will
+# want to produce a primary beam corrected version of your cube using
+# the impbcor task to combine your image with the .flux (sensitivity)
+# image output by CLEAN.
+
+# First remove the old primary beam corrected image if it exists
+os.system('rm -rf twhya_n2hp.pbcor.image')
+
+# Now correct the image
+impbcor(imagename='twhya_n2hp.image',
+        pbimage='twhya_n2hp.flux',
+        outfile='twhya_n2hp.pbcor.image')
