@@ -1,6 +1,6 @@
 # This script steps you through the basics of imaging your data. As a
 # first step, we will image the calibrated data for our secondary
-# quasar, which is just expected to be a point sources. 
+# quasar, which is just expected to be a point source.
 
 # We will explore some of the options available to you in imaging and,
 # as a demonstration, have a look at the effects of flagging and
@@ -36,19 +36,32 @@ plotms(vis='sis14_twhya_calibrated_flagged.ms',
 # FIRST CLEAN
 # ---------------------
 
-# Our secondary calibrator is field 3. Let's image field 2 into an
-# image file called "secondary."
+# Our secondary calibrator (also called the phase calibrator) is field
+# 3. Let's image this field into an image file called "secondary."
 
 # First remove old versions of the image (the .* is needed because
 # imaging produces several files with the same root name)
+
 os.system('rm -rf secondary.*')
 
-# Now use clean to image. We call the image secondary, target field 3,
-# and use multifrequency synthesis (mode mfs) to make a single
-# continuum image. We don't worry about frequency behavior and so set
-# nterms=1. We set the cell size to 0.1 arcseconds (~4-5 pixels across
-# a beam) and the image size to 128x128 (though factors of 2 are not
-# magic for CASA). CLEAN will start in interactive mode.
+# Now use CLEAN to image. We call the image "secondary", specify that
+# we want to image the data for field "3", and use multifrequency
+# synthesis (mode mfs) to make a single continuum
+# image. Multifrequency synthesis combines data from all selected
+# spectral channels into a single continuum image. Because the
+# fractional bandwidth (delta nu/nu) is pretty small, we will not
+# worry about the amplitude or structure of the source changing
+# substantially with frequency behavior. Therefore, we set nterms=1,
+# telling CLEAN that each deconvolved component has a single amplitude
+# at all frequencies. We set the cell size to 0.1 arcseconds, which
+# places ~4-5 pixels across a beam (you could figure this out a
+# priori, but it is often easier to just experiment with a quick
+# imaging call and note the beam calculated by CLEAN). We set the
+# image size to 128x128 (but note that factors of 2 are not magic for
+# CASA). This is enough to get most of the primary beam but we might
+# want a wider field for a non point source. CLEAN will start in
+# interactive mode, which allows you to manually control the
+# threshold, major cycles, and masking..
 
 clean(vis='sis14_twhya_calibrated_flagged.ms',
       imagename='secondary',
@@ -66,23 +79,25 @@ clean(vis='sis14_twhya_calibrated_flagged.ms',
 # new reckangle. Draw a box around the source (just the central
 # dot). Double click inside the box and watch it turn white.
 
-# When you are satisfied that you have captured the emission and not
-# much else, hit the green circle button. This will run a major cycle
-# of cleaning and then return.
+# When you are satisfied that you have captured the real emission and
+# not much else, hit the green circle button. This will run a major
+# cycle of cleaning and then return. Remember that the secondary
+# calibrator has been picked to give you just a point source at the
+# middle of the field.
 
 # CLEAN will come back and show you the emission left after the major
 # cycle. Look at those gorgeous residuals! When you are satisfied (or
-# when CLEAN thinks that the cleaning has met the threshold, 0 mJy by
+# when CLEAN thinks that the CLEANing has met the threshold, 0 mJy by
 # default - meaning that it stops at the first negative) hit the red X
 # and CLEAN will terminate.
 
-# Have a quick look at the files that it has created
+# Have a quick look at the files that CLEAN has created:
 os.system("ls")
 
-# the .image file is the image, the .mask shows where you cleaned, the
-# .model is the model used by clean (in Jy/pixel), the .flux shows the
+# the .image file is the image, the .mask shows where you CLEANed, the
+# .model is the model used by CLEAN (in Jy/pixel), the .flux shows the
 # primary beam response, the .residual shows what was left after you
-# cleaned (the "dirty" part of the final image), and the .psf file
+# CLEANed (the "dirty" part of the final image), and the .psf file
 # shows the synthesized beam. So much good stuff.
 
 # Look at any of these using the CASA viewer. This can be started with
@@ -91,25 +106,25 @@ os.system("ls")
 imview("secondary.image")
 
 # Look at the other images now (load them interactively using the
-# viewer)
+# viewer).
 
 # ---------------------
 # EXPERIMENT WITH CLEAN
 # ---------------------
 
 # CLEAN exposes a lot of options. Now is a good time to get a feel for
-# what these can do. One that is commonly tweaked by the user is the
-# weighting scheme used to grid the u-v data into a fourier-plane
-# image. This weighting was "natural" in the first example. Try
-# changing it to "briggs" here and try a few different values of the
-# robust parameter. Pay attention to how the beam size changes (as
-# well as the noise in the final image, measured by drawing a box and
-# double clicking).
+# what these can do. One option that is very commonly tweaked by the
+# user is the weighting scheme used to grid the u-v data into a
+# fourier-plane image. This weighting was "natural" in the first
+# example (by default). Try changing it to "briggs" here and try a few
+# different values of the robust parameter. Pay attention to how the
+# beam size changes (as well as the noise in the final image, measured
+# by drawing a box and double clicking in the viewer after the fact).
 
-# Remove old versions
+# Remove old versions of the image in case you have run this before
 os.system('rm -rf secondary_robust.*')
 
-# Clean
+# Call CLEAN with briggs weighting and robust = -1
 clean(vis='sis14_twhya_calibrated_flagged.ms',
       imagename='secondary_robust',
       field='3',
@@ -132,7 +147,7 @@ imview("secondary_robust.image")
 
 # Here are a few possible things you might try...
 
-# Look at the marginally resolved Ceres
+# Look at the marginally resolved calibrator Ceres (field 2)
 os.system('rm -rf primary_robust.*')
 clean(vis='sis14_twhya_calibrated_flagged.ms',
       imagename='primary_robust',
@@ -148,10 +163,17 @@ clean(vis='sis14_twhya_calibrated_flagged.ms',
 imview("primary_robust.image")
 
 # Notice that if you look carefully you can see that Ceres is somewhat
-# resolved, leading to the uv distance issues we had to deal with in
-# our flux calibration.
+# resolved, leading to changing amplitude as a function of uv distance
+# that we had to deal with in our flux calibration (and can be seen
+# still from a basic plotms).
 
-# Try a really big pixel size and watch things break
+# Try a really big pixel size and watch things break. It is
+# recommended to have the pixel size small compared to the synthesized
+# beam for CLEANing purposes (CLEAN quantizes the deconvolution in
+# units of pixels). When the pixel size is big compared to the
+# synthesized beam the imaging in general will start to degrade, even
+# independent of CLEANing.
+
 os.system('rm -rf secondary_bigpix.*')
 clean(vis='sis14_twhya_calibrated_flagged.ms',
       imagename='secondary_bigpix',
@@ -173,19 +195,21 @@ imview("secondary_bigpix.image")
 # SEE THE EFFECTS OF CALIBRATION AND FLAGGING
 # -------------------------------------------
 
-# (This is an aside intended to be instructive, but you can skip it if
-# you are in a hurry.)
+# NOTE: This is an aside intended to demonstrates the effect of
+# calibration, you can skip it if you are in a hurry or are focused on
+# learning only imaging.
 
 # We went to a lot of trouble to flag and calibrate the data... what
-# effect did this actually have? As an instructive aside, let's image
-# the secondary calibrator with and without calibration and with and
-# without flagging just to get an idea.
+# effect did this actually have? Let's image the secondary calibrator
+# with and without calibration and with and without flagging just to
+# get an idea of how our processing changed the final image.
 
-# Copy the uncalibrated data.
+# Copy the uncalibrated data from the working directory.
 os.system("rm -rf sis14_twhya_uncalibrated.ms")
 os.system("cp -r ../../working_data/sis14_twhya_uncalibrated.ms .")
 
-# Clean
+# CLEAN the uncalibrated data, again focus on the secondary calibrator
+# (field 3) and use the same calls as before.
 os.system('rm -rf secondary_uncalibrated.*')
 clean(vis='sis14_twhya_uncalibrated.ms',
       imagename='secondary_uncalibrated',
@@ -199,16 +223,22 @@ clean(vis='sis14_twhya_uncalibrated.ms',
       threshold='0mJy',
       interactive=True)
 
-# If you can find a source to clean, more power to you! It's a good
-# thing that we calibrated... In the raw (but still Tsys and WVR
-# corrected) data you can see echos of the calibrator throughout the
-# field, but the calibration makes the image coherent.
+# If you can find a source to CLEAN then more power to you, but this
+# is a mess. It's a good thing that we calibrated... In the raw (but
+# still Tsys and WVR corrected) data you can see echos of the
+# calibrator throughout the field, but the calibration is required to
+# make the image coherent.
 
+# Inspect the imaged uncalibrated data using the CASA viewer:
 imview("secondary_uncalibrated.image")
 
-# Copy the unflagged data
+# Now let's see the effect of flagging. Copy the unflagged data from
+# the working directory to our local directory:
 os.system("rm -rf sis14_twhya_calibrated.ms")
 os.system("cp -r ../../working_data/sis14_twhya_calibrated.ms .")
+
+# Not image the unflagged data for the secondary calibrator using the
+# same parameters as before.
 
 os.system('rm -rf secondary_unflagged.*')
 clean(vis='sis14_twhya_calibrated.ms',
@@ -227,18 +257,18 @@ imview("secondary_unflagged.image")
 
 # In contrast to the uncalibrated data, the unflagged data are
 # coherent, but they have clear artifacts in the residuals. Flagging
-# is clearly improving the quality of the data, but in overall good
+# is definitely improving the quality of the data, but in overall good
 # quality data like we have here, it's already possible to see the
-# source.
+# source before the additional flagging that we did.
 
 # ------------------------
 # IMAGE THE SCIENCE TARGET
 # ------------------------
 
 # Of course, the whole point of calibration is to calibrate the
-# science data (here field 5, check the listobs). As the final step in
-# the imaging tutorial, let's now do that. We will make a first
-# continuum image of TW Hydra.
+# *science* data (here field 5, which we know from our listobs
+# above). As the final step in the basic imaging tutorial, let's now
+# do that. We will make a first continuum image of TW Hydra.
 
 # First, we will split out the science data into its own data set,
 # while not strictly necessary this is a common step that makes
@@ -258,7 +288,13 @@ split(vis='sis14_twhya_calibrated_flagged.ms',
 listobs('twhya_smoothed.ms')
 
 # Now make a continuum image of the split out data. Notice that now TW
-# Hydra is field 0.
+# Hydra is field 0 in the new data set because we split out only that
+# field. Again we will use the multifrequency synthesis mode ("mfs")
+# and we will use both a somewhat smaller pixel size and a somewhat
+# bigger image size than above (because TW Hydra is extended and and
+# the beam will be somewhat smaller due to our use of "briggs"
+# weighting). Again, specify interactive mode and leave the threshold
+# unset for the time being.
 
 os.system('rm -rf twhya_cont.*')
 clean(vis='twhya_smoothed.ms',
@@ -274,8 +310,14 @@ clean(vis='twhya_smoothed.ms',
       threshold='0mJy',
       interactive=True)
 
-# Clean until the emission from the TW Hydra disk is less than or
-# comparable to the residuals around it.
+# Draw a box around the visible emission using the toolbar and then
+# CLEAN until the emission from the TW Hydra disk is less than or
+# comparable to the residuals around it. You will decide when CLEAN
+# should stop, at which point you hit the red X. Therefore you don't
+# need to set the threshold in this case. If you did want to place an
+# automated cutoff point, you could specify a threshold that is a
+# small multiple of the rms noise either in the call to CLEAN above or
+# by typing it in to the viewer window. We'll see more on this below.
 
 # Have a look at the image - TW Hydra is very bright and very extended
 # relative to the beam. The residuals aren't perfect, but we will
@@ -287,26 +329,36 @@ imview("twhya_cont.image")
 # ------------------------
 
 # So far we have mostly followed an interactive process with
-# CLEAN. CLEAN can also be set up to run without interactice
+# CLEAN. CLEAN can also be set up to run without interactive
 # guidance. The three main parameters to specify are the threshold at
 # which to stop (when the maximum residual is lower than this
 # threshold, CLEAN stops), the mask (the region in which CLEAN is
 # willing to identify signal), and the maximum number of iterations
-# (though this is not a recommended way to steer clean).
+# (though this is not required and it is generally recommended that
+# this be used as more of a failsafe - set it to a number so high that
+# if CLEAN gets there something has gone wrong).
 
 # Look at the image you just made and figure out a box that holds TW
 # Hydra. Something like 100,100 to 150,150 seems good for the above
 # image size. We'll set that box to be a mask using the "mask"
-# parameter.
+# parameter in the call to clean. You could also set it by supplying a
+# file (for example that created from your earlier interactive version
+# of clean).
 
 # We also need to specify a stopping threshold for CLEAN. Again, look
 # at the previous image and drag a box well away from the source to
 # estimate the noise. We see something like ~7 mJy/beam. Set the
-# threshold to be about twice this, ~15 mJy/beam.
+# threshold to be about twice this, ~15 mJy/beam. A clean threshold
+# several times the rms noise is usually recommended in order to avoid
+# adding false sources to the deconvolved image (that is, you do not
+# want clean to treat a random noise spike as a source and deconvolve
+# it from the image; particularly in the case of later
+# self-calibration this can cause real problems).
 
 # Finally set niter=5000, which is a lot of iterations - we expect
 # CLEAN to terminate before reaching this. For our purposes this is
-# just a big number.
+# just a big number that's designed to keep CLEAN from running
+# forever.
 
 os.system('rm -rf twhya_cont_auto.*')
 clean(vis='twhya_smoothed.ms',
@@ -327,3 +379,5 @@ clean(vis='twhya_smoothed.ms',
 imview('twhya_cont_auto.image')
 
 # Looks ma, no hands!
+
+# This noninteractive mode can save you a lot of time 
