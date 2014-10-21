@@ -3,7 +3,7 @@
 
 # First, opy the data from the working directory
 os.system("rm -rf sis14_twhya_uncalibrated.ms")
-os.system("cp -r ../../working_data/sis14_twhya_uncalibrated.ms .")
+os.system("cp -r ../working_data/sis14_twhya_uncalibrated.ms .")
 
 # List the contents of the observations - here they will appear in the
 # log, but you can also shunt them to a text file using the listfile

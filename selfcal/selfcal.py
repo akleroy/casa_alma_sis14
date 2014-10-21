@@ -4,12 +4,11 @@
 # by repeating that step and then we iteratively self calibrate the
 # data, focusing on short-timescale phase corrections.
 
-
 # Copy the calibrated and flagged data from the working
 # directory. Remember that this is our best version of the data.
 
 os.system("rm -rf sis14_twhya_calibrated_flagged.ms")
-os.system("cp -r ../../working_data/sis14_twhya_calibrated_flagged.ms .")
+os.system("cp -r ../working_data/sis14_twhya_calibrated_flagged.ms .")
 
 # Run a quick listobs to get situated
 listobs("sis14_twhya_calibrated_flagged.ms")

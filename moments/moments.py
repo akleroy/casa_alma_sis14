@@ -1,12 +1,13 @@
 # We have a line data cube and a continuum image. We'd now like to
-# understand some of the properties of the cube.
+# understand some of the properties of the images that we have
+# produced. 
 
 # Copy the data from the working directory
 os.system("rm -rf sis14_twhya_cont.image")
-os.system("cp -r ../../working_data/sis14_twhya_cont.image .")
+os.system("cp -r ../working_data/sis14_twhya_cont.image .")
 
 os.system("rm -rf sis14_twhya_n2hp.image")
-os.system("cp -r ../../working_data/sis14_twhya_n2hp.image .")
+os.system("cp -r ../working_data/sis14_twhya_n2hp.image .")
 
 # Similar to listobs, you can orient yourself with these images using
 # the image header command.
@@ -14,9 +15,15 @@ os.system("cp -r ../../working_data/sis14_twhya_n2hp.image .")
 imhead("sis14_twhya_cont.image")
 imhead("sis14_twhya_n2hp.image")
 
-# ----------
+# ------------------------------
+# PRIMARY BEAM CORRECTION
+# ------------------------------
+
+
+
+# ------------------------------
 # STATISTICS
-# ----------
+# ------------------------------
 
 # Often some of the first numbers that you want to calculate are basic
 # statistics and fluxes. You can do these pretty easily in the viewer,
@@ -42,9 +49,9 @@ imstat("sis14_twhya_cont.image",
 imstat("sis14_twhya_cont.image",
        box="25,150,225,200")
 
-# ----------
+# ------------------------------
 # MOMENTS
-# ----------
+# ------------------------------
 
 # For the spectral line cube, it's very useful to collapse the cube in
 # various ways to analyze the emission. The immoments task lets you do
@@ -84,16 +91,14 @@ imview(raster={'file': 'sis14_twhya_cont.image',
        contour={'file': 'sis14_twhya_n2hp.mom0',
                 'levels': [0.5,0.6,0.7,0.8] })
 
-# -----------
-# -----------
+# ---------------------------------
+# EXPORT FITS IMAGES
+# ---------------------------------
 
-# -----------
-# EXPORT FITS
-# -----------
-
-# CASA is great (of course) but you may want to export your data to
-# share them with others. It's easy to export into the .FITS format
-# via the exportfits command.
+# CASA is great (of course) but you will ultimately want to export
+# your data to a common format to analyze in other programs, share
+# with other astronomers, or archive. It's easy to export images from
+# CASA's image format to .FITS images via the exportfits command.
 
 exportfits(imagename="sis14_twhya_cont.image",
            fitsimage="twhya_cont.fits",

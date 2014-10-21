@@ -17,7 +17,7 @@
 # directory. Remember that this is our best version of the data.
 
 os.system("rm -rf sis14_twhya_calibrated_flagged.ms")
-os.system("cp -r ../../working_data/sis14_twhya_calibrated_flagged.ms .")
+os.system("cp -r ../working_data/sis14_twhya_calibrated_flagged.ms .")
 
 # Orient yourself:
 listobs('sis14_twhya_calibrated_flagged.ms')
@@ -206,7 +206,7 @@ imview("secondary_bigpix.image")
 
 # Copy the uncalibrated data from the working directory.
 os.system("rm -rf sis14_twhya_uncalibrated.ms")
-os.system("cp -r ../../working_data/sis14_twhya_uncalibrated.ms .")
+os.system("cp -r ../working_data/sis14_twhya_uncalibrated.ms .")
 
 # CLEAN the uncalibrated data, again focus on the secondary calibrator
 # (field 3) and use the same calls as before.
@@ -235,7 +235,7 @@ imview("secondary_uncalibrated.image")
 # Now let's see the effect of flagging. Copy the unflagged data from
 # the working directory to our local directory:
 os.system("rm -rf sis14_twhya_calibrated.ms")
-os.system("cp -r ../../working_data/sis14_twhya_calibrated.ms .")
+os.system("cp -r ../working_data/sis14_twhya_calibrated.ms .")
 
 # Not image the unflagged data for the secondary calibrator using the
 # same parameters as before.

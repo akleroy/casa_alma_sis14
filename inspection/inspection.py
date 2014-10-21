@@ -9,7 +9,7 @@
 
 # First copy the calibrated (but not flagged) data
 os.system("rm -rf sis14_twhya_calibrated.ms")
-os.system("cp -r ../../working_data/sis14_twhya_calibrated.ms .")
+os.system("cp -r ../working_data/sis14_twhya_calibrated.ms .")
 
 # Re-orient yourself if necessary
 listobs("sis14_twhya_calibrated.ms")

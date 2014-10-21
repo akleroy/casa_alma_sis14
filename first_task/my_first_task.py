@@ -5,7 +5,7 @@
 
 # Copy the data from the working directory
 os.system("rm -rf sis14_twhya_uncalibrated.ms")
-os.system("cp -r ../../working_data/sis14_twhya_uncalibrated.ms .")
+os.system("cp -r ../working_data/sis14_twhya_uncalibrated.ms .")
 
 # A full guide on CASA basics are here
 # http://casaguides.nrao.edu/index.php?title=Getting_Started_in_CASA
@@ -43,5 +43,3 @@ os.system("more my_listfile.txt")
 # look at an example of a script then run it using the following
 # command.
 execfile("first_script.py")
-
-

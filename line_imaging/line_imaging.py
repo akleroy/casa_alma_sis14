@@ -15,7 +15,7 @@
 # current directory.
 
 os.system("rm -rf sis14_twhya_selfcal.ms")
-os.system("cp -r ../../working_data/sis14_twhya_selfcal.ms .")
+os.system("cp -r ../working_data/sis14_twhya_selfcal.ms .")
 
 # ------------------------
 # UV CONTINUUM SUBTRACTION

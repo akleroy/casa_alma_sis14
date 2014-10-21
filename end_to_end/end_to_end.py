@@ -7,7 +7,7 @@
 
 # Copy the data from the working directory
 os.system("rm -rf sis14_twhya_uncalibrated.ms")
-os.system("cp -r ../../working_data/sis14_twhya_uncalibrated.ms .")
+os.system("cp -r ../working_data/sis14_twhya_uncalibrated.ms .")
 
 # We run our calibration here via a script. Take a minute to look
 # through the script and see how it works.

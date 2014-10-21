@@ -5,7 +5,7 @@
 
 # First, copy the data from the working directory
 os.system("rm -rf sis14_twhya_bpcal.ms")
-os.system("cp -r ../../working_data/sis14_twhya_bpcal.ms .")
+os.system("cp -r ../working_data/sis14_twhya_bpcal.ms .")
 
 # Orient yourself with a listobs
 listobs("sis14_twhya_bpcal.ms")

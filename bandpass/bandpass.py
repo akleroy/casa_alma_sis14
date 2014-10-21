@@ -6,7 +6,7 @@
 
 # First, copy the data from the working directory
 os.system("rm -rf sis14_twhya_uncalibrated.ms")
-os.system("cp -r ../../working_data/sis14_twhya_uncalibrated.ms .")
+os.system("cp -r ../working_data/sis14_twhya_uncalibrated.ms .")
 
 # Run a listobs and note the bandpass calibrators. We have two, but
 # will work with field 0 in this data set.
