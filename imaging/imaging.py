@@ -380,4 +380,56 @@ imview('twhya_cont_auto.image')
 
 # Looks ma, no hands!
 
-# This noninteractive mode can save you a lot of time 
+# This noninteractive mode can save you a lot of time and has the
+# advantage of being very reproducible. Note that you also have a
+# "hybrid" mode available by starting the CLEAN process with
+# interactive=True but then hitting the arrow button in the top right
+# corner. This tells CLEAN to proceed until it hits the maximum number
+# of iterations or the threshold. This combination mode is nice
+# because you can manually draw the mask used to clean. Note that you
+# can also manually set both the threshold and the maximum number of
+# iterations (which is the product of the number of major cycles and
+# the iterations per cycle) in the viewer.
+
+# Note, however, that best practice for an image with uncertain
+# calibration and especially one with a bright source, is to clean
+# interactively at least the first time. In the case where an image
+# may be "dynamic range limited" (i.e., the quality is set by the
+# accuracy of calibration and deconvolution) it can be hard to predict
+# the correct threshold.
+
+# ------------------------
+# PRIMARY BEAM CORRRECTION
+# ------------------------
+
+# An important subtlety of CLEAN is that by default the image produced
+# by CLEAN is not corrected for the primary beam (the field of view)
+# of the individual dishes in the array. The primary beam response is
+# typically a Gaussian with value 1 at the center of the field. To
+# form an astronomically correct image of the sky, the output of CLEAN
+# needs to be divided by this primary beam (or, in the case of
+# mosaics, the combination of primary beam patterns used to make the
+# mosaic). Fortunately, CASA stores the primary beam information
+# needed to make this correction in an image file with a ".flux"
+# extension.
+
+# The CASA task impbcor can be used to combine the .flux image with
+# the output image from CLEAN to produce a primary-beam corrected
+# image.
+
+# First remove the old primary beam corrected image if it exists
+os.system('rm -rf twhya_cont.pbcor.image')
+
+# Now correct the image
+impbcor(imagename='twhya_cont.image',
+        pbimage='twhya_cont.flux',
+        outfile='twhya_cont.pbcor.image')
+
+# Inspect the output image
+imview('twhya_cont.pbcor.image')
+
+# It's often very convenient to work in images before primary beam
+# correction because the noise is the same across the field (e.g.,
+# this is a clean data set to search for signal) but it's very
+# important to remember to apply this correction before calculating
+# fluxes or intensities for science.
