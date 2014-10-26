@@ -4,6 +4,8 @@ Modular tutorials for ALMA/CASA
 Getting the Data
 ----------------
 
+The script package (which you have here) is small and can be help in a
+repository.
 
 CASA Basics
 -----------

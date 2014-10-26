@@ -14,9 +14,10 @@ os.system("cp -r ../working_data/sis14_twhya_calibrated_flagged.ms .")
 listobs("sis14_twhya_calibrated_flagged.ms")
 
 # First, use clean to make a continuum image of TW Hydra (field
-# 5). This is inteactive, but the automated approach that we used in
-# the last lesson would also work. Clean now until the residuals near
-# TW HYdra are comparable to those in the rest of the image.
+# 5). This call is inteactive, but the automated approach that we used
+# in the last lesson would also work. See the last lesson for
+# details. Clean now until the residuals near TW HYdra are comparable
+# to those in the rest of the image.
 
 os.system('rm -rf first_image.*')
 clean(vis='sis14_twhya_calibrated_flagged.ms',
@@ -29,19 +30,22 @@ clean(vis='sis14_twhya_calibrated_flagged.ms',
       cell=['0.08arcsec'],
       weighting='natural',
       threshold='0mJy',
-      interactive=True)
+      interactive=True,
+      usescratch=True)
 
 # In addition to creating an image, CLEAN saves the cleaned model with
-# the measurement set. This means that based on the previous clean, we
-# now have a model for the science target. In the previous calibration
-# we only had models for the calibrators. Of course this model is only
-# as good as the first clean, but it's a good starting point.
+# the measurement set (the parameter usescratch tells clean to save
+# the model as a discrete data column). This means that based on the
+# previous clean, we now have a model for the science target. In the
+# previous calibration we only had models for the calibrators. Of
+# course this model is only as good as the first clean, but it's a
+# good starting point.
 
-# With a model in place, we are now in a position to calibrate the
-# science target directly. We use gaincal just like we would for any
-# other calibration. We focus on phase corrections - generally good
-# practice for self calibration - because amplitude self calibration
-# has a larger potential to change the source characteristics.
+# With a model in place, we are in a position to calibrate the science
+# target directly. We use gaincal just like we would for any other
+# calibration. We focus on phase corrections - generally good practice
+# for self calibration - because amplitude self calibration has a
+# larger potential to change the source characteristics.
 
 # Figuring out the right averaging is often the key to good
 # self-calibration. Ideally, you would like to work with the shortest
@@ -60,11 +64,19 @@ gaincal(vis="sis14_twhya_calibrated_flagged.ms",
         refant="DV22",
         gaintype="G")
 
-# Try playing around with different solution intervals or options.
+# Try playing around with different solution intervals or averaging
+# options. Bear in mind that you want the shortest possible interval
+# while also retaining separate SPW and polarizations. However, none
+# of this helps you if you don't get good solutions. So you generally
+# will plan with the following: (1) combine="scan" or "spw" or both to
+# allow solutions to cross SPW/scan boundaries, (2) solint to set the
+# solution interval, and (3) gaintype, toggling between "G" and "T"
+# (the latter averages two polarizations) .
 
 # Plot the resulting solutions. We are finding nontrivial, though not
-# enormous, offsets (a few 10s of degrees) with the two correlations
-# tracking one another pretty well.
+# enormous, solutions (a few 10s of degrees) with the two correlations
+# tracking one another pretty well. If the data were already perfectly
+# calibrated, these values would solve to be zero.
 
 plotcal(caltable="phase.cal", 
         xaxis="time",
@@ -87,7 +99,7 @@ applycal(vis="sis14_twhya_calibrated_flagged.ms",
 
 # At this point the self-calibrated data live in the corrected
 # column. Because we will want to try more rounds of self calibration,
-# it's very useful (though not strictly necessary) at this point to
+# it's often useful (though not strictly necessary) at this point to
 # split out the corrected data into a new data set.
 
 os.system("rm -rf sis14_twhya_selfcal.ms")
@@ -252,3 +264,7 @@ clean(vis='sis14_twhya_selfcal_3.ms',
 # This fourth image is our best continuum image. We can use the data
 # set (selfcal_3) to for further work - in the next lesson we'll do uv
 # continuum subtraction and line imaging.
+
+# (ASIDE: Note that you would need to primary beam correct the image
+# in the same way as you corrected the previous continuum image before
+# making science measurements).

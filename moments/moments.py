@@ -16,12 +16,6 @@ imhead("sis14_twhya_cont.image")
 imhead("sis14_twhya_n2hp.image")
 
 # ------------------------------
-# PRIMARY BEAM CORRECTION
-# ------------------------------
-
-
-
-# ------------------------------
 # STATISTICS
 # ------------------------------
 

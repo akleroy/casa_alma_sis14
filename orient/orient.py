@@ -1,7 +1,7 @@
 # This script steps through some very common operations that you would
 # use to get oriented with a new data set.
 
-# First, opy the data from the working directory
+# First, copy the data from the working directory
 os.system("rm -rf sis14_twhya_uncalibrated.ms")
 os.system("cp -r ../working_data/sis14_twhya_uncalibrated.ms .")
 
